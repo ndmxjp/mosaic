@@ -1,12 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"image"
 	"image/color"
-	"fmt"
 	"io/ioutil"
-	"os"
 	"math"
+	"os"
 	"sync"
 )
 
@@ -35,7 +35,7 @@ func resize(in image.Image, newWidth int) image.NRGBA {
 	for y, j := bounds.Min.Y, bounds.Min.X; y < bounds.Max.Y; y, j = y+ratio, j+1 {
 		for x, i := bounds.Min.X, bounds.Min.X; x < bounds.Max.X; x, i = x+ratio, i+1 {
 			r, g, b, a := in.At(x, y).RGBA()
-			out.SetNRGBA(i, j, color.NRGBA{uint8(r>>8), uint8(g>>8), uint8(b>>8), uint8(a>>8)})
+			out.SetNRGBA(i, j, color.NRGBA{uint8(r >> 8), uint8(g >> 8), uint8(b >> 8), uint8(a >> 8)})
 		}
 	}
 	return *out
@@ -50,7 +50,7 @@ func tilesDB() map[string][3]float64 {
 		file, err := os.Open(name)
 		if err == nil {
 			img, _, err := image.Decode(file)
-			if  err == nil {
+			if err == nil {
 				db[name] = averageColor(img)
 			} else {
 				fmt.Println("error in populating TILEDB:*", err, name)

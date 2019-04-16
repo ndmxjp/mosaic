@@ -22,7 +22,7 @@ func main() {
 	mux.HandleFunc("/", upload)
 	mux.HandleFunc("/mosaic", mosaic)
 	server := &http.Server{
-		Addr: ":8080",
+		Addr:    ":8080",
 		Handler: mux,
 	}
 
@@ -47,23 +47,22 @@ func mosaic(w http.ResponseWriter, r *http.Request) {
 	original, _, _ := image.Decode(file)
 	bounds := original.Bounds()
 
-
 	db := cloneTilesDB()
 
 	c1 := cut(original, &db, tileSize, bounds.Min.X, bounds.Min.Y, bounds.Max.X/2, bounds.Max.Y/2)
 	c2 := cut(original, &db, tileSize, bounds.Max.X/2, bounds.Min.Y, bounds.Max.X, bounds.Max.Y/2)
 	c3 := cut(original, &db, tileSize, bounds.Min.X, bounds.Max.Y/2, bounds.Max.X/2, bounds.Max.Y)
 	c4 := cut(original, &db, tileSize, bounds.Max.X/2, bounds.Max.Y/2, bounds.Max.X, bounds.Max.Y)
-	c := combine(bounds,c1, c2, c3, c4)
-	
+	c := combine(bounds, c1, c2, c3, c4)
+
 	buf1 := new(bytes.Buffer)
 	jpeg.Encode(buf1, original, nil)
 	originalStr := base64.StdEncoding.EncodeToString(buf1.Bytes())
 
 	t1 := time.Now()
-	images := map[string]string {
+	images := map[string]string{
 		"original": originalStr,
-		"mosaic": <-c,
+		"mosaic":   <-c,
 		"duration": fmt.Sprintf("%v", t1.Sub(t0)),
 	}
 
@@ -71,15 +70,15 @@ func mosaic(w http.ResponseWriter, r *http.Request) {
 	t.Execute(w, images)
 }
 
-func cut(original image.Image, db *DB, tileSize, x1, y1, x2, y2 int) <- chan image.Image {
-	c := make(chan image.Image)	
+func cut(original image.Image, db *DB, tileSize, x1, y1, x2, y2 int) <-chan image.Image {
+	c := make(chan image.Image)
 	sp := image.Point{0, 0}
 	go func() {
 		newimage := image.NewNRGBA(image.Rect(x1, y1, x2, y2))
 		for y := y1; y < y2; y = y + tileSize {
 			for x := x1; x < x2; x = x + tileSize {
 
-				r, g, b, _ := original.At(x,y).RGBA()
+				r, g, b, _ := original.At(x, y).RGBA()
 				color := [3]float64{float64(r), float64(g), float64(b)}
 
 				nearest := db.nearest(color)
@@ -125,13 +124,13 @@ func combine(r image.Rectangle, c1, c2, c3, c4 <-chan image.Image) <-chan string
 			case s1, ok1 = <-c1:
 				go copy(img, s1.Bounds(), s1, image.Point{r.Min.X, r.Min.Y})
 			case s2, ok2 = <-c2:
-				go copy(img, s2.Bounds(), s2, image.Point{r.Max.X/2, r.Min.Y})
+				go copy(img, s2.Bounds(), s2, image.Point{r.Max.X / 2, r.Min.Y})
 			case s3, ok3 = <-c3:
-				go copy(img, s3.Bounds(), s3, image.Point{r.Min.X, r.Max.Y/2})
+				go copy(img, s3.Bounds(), s3, image.Point{r.Min.X, r.Max.Y / 2})
 			case s4, ok4 = <-c4:
-				go copy(img, s4.Bounds(), s4, image.Point{r.Max.X/2, r.Max.Y/2})
+				go copy(img, s4.Bounds(), s4, image.Point{r.Max.X / 2, r.Max.Y / 2})
 			}
-			if (ok1 && ok2 && ok3 && ok4) {
+			if ok1 && ok2 && ok3 && ok4 {
 				break
 			}
 		}
