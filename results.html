@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Mosaic</title>
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0' name='viewport'>
+    <meta content='none' name='robots'>
+    <script 
+      src="https://code.jquery.com/jquery-1.12.4.min.js"
+      integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
+      crossorigin="anonymous"
+    ></script>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <style>
+      body { padding-top: 20px; }
+      p {font-size: 16px; line-height: 140%; }  
+
+      .content {
+        background-color: #fff;
+        padding: 20px 50px 50px 50px;
+      }  
+    </style>    
+  </head>   
+  <body>
+    <div class='container'>
+        <div class="col-md-6">
+          <img src="data:image/jpg;base64,{{ .original }}" width="100%">
+          <div class="lead">Original</div>
+        </div>
+        <div class="col-md-6">
+          <img src="data:image/jpg;base64,{{ .mosaic }}" width="100%">
+          <div class="lead">Mosaic - {{ .duration }}</div>
+        </div>
+        <div class="col-md-12 center">
+          <a class="btn btn-lg btn-info" href="/">Go Back</a>
+        </div>
+    </div>   
+    <br>
+  </body>
+</html>
